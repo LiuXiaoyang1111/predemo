@@ -1,51 +1,33 @@
-# Copyright (c) Streamlit Inc. (2018-2022) Snowflake Inc. (2022)
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
+# import package
 import streamlit as st
-from streamlit.logger import get_logger
 
-LOGGER = get_logger(__name__)
+# set the title
+st.title("海马体体积的初步计算")
 
+# input the age first
+st.write("🧓请在下方选择你目前的年龄")
+col1, col2 = st.columns(2)
+year, month = None, None
+with col1:
+    year_number = list(range(55, 70))
+    for i in range(len(year_number)):
+        year_number[i] = str(year_number[i])+"岁"
+    year = st.selectbox("单位：年", year_number, index=None, placeholder="点击下拉选择")
+with col2:
+    month_number = list(range(12))
+    for i in range(len(month_number)):
+        month_number[i] = str(month_number[i])+"月"
+    month = st.selectbox("单位：月", month_number, index=None, placeholder="点击下拉选择")
 
-def run():
-    st.set_page_config(
-        page_title="Hello",
-        page_icon="👋",
-    )
+# input the gender and the education level
+if year is not None and month is not None:
+    st.write("你选择的年龄是"+year+month)
+    gender = st.selectbox("请选择你的性别", ("男", "女"), index=None, placeholder="点击下拉选择")
+    education = st.text_input("请选择你的受教育程度（8年至20年）", placeholder="例：11年")
+    education_number = list(range(8, 21))
+    for i in range(len(education_number)):
+        education_number[i] = str(education_number[i])+"年"
+    if education != "" and education not in education_number:
+        st.write("你的输入不符合规范，请重新输入")
 
-    st.write("# Welcome to Streamlit! 👋")
-
-    st.sidebar.success("Select a demo above.")
-
-    st.markdown(
-        """
-        Streamlit is an open-source app framework built specifically for
-        Machine Learning and Data Science projects.
-        **👈 Select a demo from the sidebar** to see some examples
-        of what Streamlit can do!
-        ### Want to learn more?
-        - Check out [streamlit.io](https://streamlit.io)
-        - Jump into our [documentation](https://docs.streamlit.io)
-        - Ask a question in our [community
-          forums](https://discuss.streamlit.io)
-        ### See more complex demos
-        - Use a neural net to [analyze the Udacity Self-driving Car Image
-          Dataset](https://github.com/streamlit/demo-self-driving)
-        - Explore a [New York City rideshare dataset](https://github.com/streamlit/demo-uber-nyc-pickups)
-    """
-    )
-
-
-if __name__ == "__main__":
-    run()
+    #st.write("你的海马体体积是30")
