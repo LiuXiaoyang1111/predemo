@@ -29,7 +29,7 @@ if year is not None and month is not None:
         education = float(education)
         if education < 8 or education > 20:
             st.write("你的输入应位于[8,20]，请重新输入")
-    elif education.isdigit() == False:
+    elif education.isdigit() == False and education != "":
         st.write("你的输入不符合规范，请重新输入")
     diagnosis = st.selectbox("请选择你的诊断结果", ("NL","MCI","DEMEMTIA"), index=None, placeholder="点击下拉选择")
     apgen = st.selectbox("请选择你的apgen", ("2","3","4","5","6"), index=None, placeholder="点击下拉选择")
