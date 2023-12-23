@@ -23,11 +23,14 @@ with col2:
 if year is not None and month is not None:
     st.write("你选择的年龄是"+year+month)
     gender = st.selectbox("请选择你的性别", ("男", "女"), index=None, placeholder="点击下拉选择")
-    education = st.text_input("请选择你的受教育程度（8年至20年）", placeholder="例：11年")
-    education_number = list(range(8, 21))
-    for i in range(len(education_number)):
-        education_number[i] = str(education_number[i])+"年"
-    if education != "" and education not in education_number:
+    education = st.text_input("请选择你的受教育程度（8年至20年）", placeholder="例：11")
+    if education.isdigit():
+        education = float(education)
+        if education < 8 or education > 20:
+            st.write("你的输入应位于[8,20]，请重新输入")
+    else:
         st.write("你的输入不符合规范，请重新输入")
-
-    #st.write("你的海马体体积是30")
+    diagnosis = st.selectbox("请选择你的诊断结果", ("NL","MCI","DEMEMTIA"), index=None, placeholder="点击下拉选择")
+    apgen = st.selectbox("请选择你的apgen", ("2","3","4","5","6"), index=None, placeholder="点击下拉选择")
+    CDORIENT = st.selectbox("请选择你的CDORIENT", ("0","0.5","1","2"), index=None, placeholder="点击下拉选择")
+    
