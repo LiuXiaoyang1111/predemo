@@ -83,49 +83,647 @@ CA = [2322.69, 2150.578, 1671.45, 1396.486, 2587.49, 2697.97, 2779.24, 2037.37, 
       2141.42, 2634.58, 1833.493, 1780.725, 1456.297, 2834.62, 2701.11]
 
 # 设定标题
-st.title("海马体体积的初步计算")
+st.title("海马体体积的估算")
 
-# 首先输入年龄
-st.header("请在下方选择患者目前的年龄🧓")
-col1, col2 = st.columns(2)
-year, month = None, None
-with col1:
-    year_number = list(range(55, 88))
-    for i in range(len(year_number)):
-        year_number[i] = str(year_number[i]) + "岁"
-    year = st.selectbox("单位：年", year_number, index=None, placeholder="点击下拉选择")
-with col2:
-    month_number = list(range(12))
-    for i in range(len(month_number)):
-        month_number[i] = str(month_number[i]) + "月"
-    month = st.selectbox("单位：月", month_number, index=None, placeholder="点击下拉选择")
+# 设定第一标题
+st.subheader("请在下方选择你更关心的患者特征🏥‍")
+selection = st.radio("⏰提醒：根据统计学意见，我们更推荐您选择受教育程度以估算患者的海马体体积", ("年龄", "受教育程度"),
+                     index=None)
 
-# 根据不同导年龄段，进入不同的选项栏
-if year is not None and month is not None:
-    # 第一阶段：55年0月-69年1月
-    if int(year[:-1]) in list(range(55, 69)) or (int(year[:-1]) == 69 and int(month[:-1]) <= 1):
-        AGE = int(year[:-1]) + float(month[:-1]) / 12
-        st.write("⚠️请注意：上方选择的患者年龄是" + year + month)
-        st.header("请填写下方相关信息📃")
-        GENDER = st.selectbox("1️⃣请选择性别", ("男", "女"), index=None, placeholder="点击下拉选择")
+if selection == "年龄":
+    # 首先输入年龄
+    st.subheader("请在下方选择患者目前的年龄🧑")
+    col1, col2 = st.columns(2)
+    year, month = None, None
+    with col1:
+        year_number = list(range(55, 88))
+        for i in range(len(year_number)):
+            year_number[i] = str(year_number[i]) + "岁"
+        year = st.selectbox("单位：年", year_number, index=None, placeholder="点击下拉选择")
+    with col2:
+        month_number = list(range(12))
+        for i in range(len(month_number)):
+            month_number[i] = str(month_number[i]) + "月"
+        month = st.selectbox("单位：月", month_number, index=None, placeholder="点击下拉选择")
+
+    # 根据不同导年龄段，进入不同的选项栏
+    if year is not None and month is not None:
+        # 第一阶段：55年0月-69年1月
+        if int(year[:-1]) in list(range(55, 69)) or (int(year[:-1]) == 69 and int(month[:-1]) <= 1):
+            AGE = int(year[:-1]) + float(month[:-1]) / 12
+            st.write("⚠️请注意：上方选择的患者年龄是" + year + month)
+            st.subheader("请填写下方相关信息📃")
+            GENDER = st.selectbox("1️⃣请选择性别", ("男", "女"), index=None, placeholder="点击下拉选择")
+            if GENDER == "男":
+                GENDER = 1
+            else:
+                GENDER = 2
+            EDUCATION = st.text_input("2️⃣请输入受教育程度（8年至20年）", placeholder="例：11")
+            if EDUCATION.isdigit():
+                EDUCATION = float(EDUCATION)
+                if EDUCATION < 8 or EDUCATION > 20:
+                    st.write("输入范围应位于[8,20]，请重新输入")
+            elif EDUCATION.isascii() and EDUCATION != "":
+                items = EDUCATION.split(("."))
+                if len(items) == 2 and items[0].isdigit() and items[1].isdigit():
+                    EDUCATION = float(EDUCATION)
+                elif len(items) != 2:
+                    st.write("输入不符合规范，请重新输入")
+            elif EDUCATION.isdigit() == False and EDUCATION != "":
+                st.write("输入不符合规范，请重新输入")
+            DIAGNOSIS = st.selectbox("3️⃣请选择诊断结果", ("NL", "MCI", "DEMEMTIA"), index=None,
+                                     placeholder="点击下拉选择")
+            if DIAGNOSIS == "NL":
+                DIAGNOSIS = 1
+            elif DIAGNOSIS == "MCI":
+                DIAGNOSIS = 2
+            else:
+                DIAGNOSIS = 3
+            APGEN = st.selectbox("4️⃣请选择APGEN", (2, 3, 4, 5, 6), index=None, placeholder="点击下拉选择")
+            CDORIENT = st.selectbox("5️⃣请选择CDORIENT", (0, 0.5, 1, 2), index=None, placeholder="点击下拉选择")
+            GDMEMORY = st.selectbox("6️⃣请选择GDMEMORY", (0, 1), index=None, placeholder="点击下拉选择")
+            GDTOTAL = st.selectbox("7️⃣请选择GDTOTAL", list(range(8)), index=None, placeholder="点击下拉选择")
+            Q1SCORE_number = [0, 0.67, 1, 1.33, 1.67, 2, 2.33, 2.67, 3, 3.33, 3.67, 4, 4.33, 4.67, 5, 5.33, 5.67, 6,
+                              6.33,
+                              6.67, 7, 7.33, 7.67, 8, 8.33, 8.67, 9]
+            Q1SCORE = st.selectbox("8️⃣请选择Q1SCORE", Q1SCORE_number, index=None, placeholder="点击下拉选择")
+            Q4SCORE = st.selectbox("9️⃣请选择Q4SCORE", list(range(11)), index=None,
+                                   placeholder="点击下拉选择")
+            Q8SCORE = st.selectbox("1️⃣0️⃣请选择Q8SCORE", list(range(13)), index=None,
+                                   placeholder="点击下拉选择")
+            Q11SCORE = st.selectbox("1️⃣1️⃣请选择Q11SCORE", list(range(4)), index=None, placeholder="点击下拉选择")
+            Q13SCORE = st.selectbox("1️⃣2️⃣请选择Q13SCORE", list(range(6)), index=None, placeholder="点击下拉选择")
+            VISSPAT4 = st.selectbox("1️⃣3️⃣请选择VISSPAT4", (1, 2, 3, 4, 9), index=None,
+                                    placeholder="点击下拉选择")
+            MEMORY3 = st.selectbox("1️⃣4️⃣请选择MEMORY3", (1, 2, 3, 4, 9), index=None,
+                                   placeholder="点击下拉选择")
+            LANG2 = st.selectbox("1️⃣5️⃣请选择LANG2", (1, 2, 3, 4, 9), index=None, placeholder="点击下拉选择")
+            DIVATT1 = st.selectbox("1️⃣6️⃣请选择DIVATT1", (1, 2, 3, 4, 9), index=None,
+                                   placeholder="点击下拉选择")
+            DIVATT4 = st.selectbox("1️⃣7️⃣请选择DIVATT4", (1, 2, 3, 4, 9), index=None,
+                                   placeholder="点击下拉选择")
+            if GENDER != None and EDUCATION != None and DIAGNOSIS != None and APGEN != None and CDORIENT != None and GDMEMORY != None and GDTOTAL != None and Q1SCORE != None and Q4SCORE != None and Q8SCORE != None and Q11SCORE != None and Q13SCORE != None and VISSPAT4 != None and MEMORY3 != None and LANG2 != None and DIVATT1 != None and DIVATT4 != None:
+                st.subheader("结果输出🖨️")
+                INTERCEPT_coef = 3724.457
+                AGE_coef = -14.796
+
+                if GENDER == 2:
+                    GENDER_coef = -265.635
+                else:
+                    GENDER_coef = 0
+                EDUCATION_coef = -7.330
+
+                if DIAGNOSIS == 2:
+                    DIAGNOSIS_coef = -171.177
+                elif DIAGNOSIS == 3:
+                    DIAGNOSIS_coef = 340.242
+                else:
+                    DIAGNOSIS_coef = 0
+
+                if APGEN == 3:
+                    APGEN_coef = 188.120
+                else:
+                    APGEN_coef = 0
+
+                if CDORIENT == 1:
+                    CDORIENT_coef = -534.272
+                else:
+                    CDORIENT_coef = 0
+
+                if GDMEMORY == 1:
+                    GDMEMORY_coef = -254.921
+                else:
+                    GDMEMORY_coef = 0
+
+                if GDTOTAL == 4:
+                    GDTOTAL_coef = 404.145
+                elif GDTOTAL == 3:
+                    GDTOTAL_coef = 323.347
+                elif GDTOTAL == 2:
+                    GDTOTAL_coef = 205.479
+                elif GDTOTAL == 1:
+                    GDTOTAL_coef = 108.149
+                else:
+                    GDTOTAL_coef = 0
+
+                if Q1SCORE == 5.33:
+                    Q1SCORE_coef = 444.663
+                elif Q1SCORE == 5:
+                    Q1SCORE_coef = 146.203
+                elif Q1SCORE == 3.33:
+                    Q1SCORE_coef = 297.443
+                elif Q1SCORE == 2.33:
+                    Q1SCORE_coef = 192.840
+                elif Q1SCORE == 5.67:
+                    Q1SCORE_coef = -377.258
+                elif Q1SCORE == 1.67:
+                    Q1SCORE_coef = 313.529
+                else:
+                    Q1SCORE_coef = 0
+
+                if Q4SCORE == 9:
+                    Q4SCORE_coef = -855.968
+                elif Q4SCORE == 10:
+                    Q4SCORE_coef = -887.173
+                else:
+                    Q4SCORE_coef = 0
+
+                if Q8SCORE == 4:
+                    Q8SCORE_coef = -90.860
+                elif Q8SCORE == 1:
+                    Q8SCORE_coef = 163.155
+                else:
+                    Q8SCORE_coef = 0
+
+                if Q11SCORE == 1:
+                    Q11SCORE_coef = -342.146
+                else:
+                    Q11SCORE_coef = 0
+
+                if Q13SCORE == 3:
+                    Q13SCORE_coef = 456.490
+                else:
+                    Q13SCORE_coef = 0
+
+                if VISSPAT4 == 2:
+                    VISSPAT4_coef = 120.407
+                else:
+                    VISSPAT4_coef = 0
+
+                if MEMORY3 == 4:
+                    MEMORY3_coef = 169.713
+                else:
+                    MEMORY3_coef = 0
+
+                if LANG2 == 9:
+                    LANG2_coef = -201.520
+                elif LANG2 == 4:
+                    LANG2_coef = -381.351
+                else:
+                    LANG2_coef = 0
+
+                if DIVATT1 == 4:
+                    DIVATT1_coef = 98.634
+                elif DIVATT1 == 2:
+                    DIVATT1_coef = -121.042
+                else:
+                    DIVATT1_coef = 0
+
+                if DIVATT4 == 9:
+                    DIVATT4_coef = 405.506
+                elif DIVATT4 == 2:
+                    DIVATT4_coef = 200.565
+                else:
+                    DIVATT4_coef = 0
+
+                y = INTERCEPT_coef + AGE_coef * AGE + GENDER_coef * GENDER + EDUCATION_coef * EDUCATION + DIAGNOSIS_coef * DIAGNOSIS + APGEN_coef * APGEN + CDORIENT_coef * CDORIENT + GDMEMORY_coef * GDMEMORY + GDTOTAL_coef * GDTOTAL + Q1SCORE_coef * Q1SCORE + Q4SCORE_coef * Q4SCORE + Q8SCORE_coef * Q8SCORE + Q11SCORE_coef * Q11SCORE + Q13SCORE_coef * Q13SCORE + VISSPAT4_coef * VISSPAT4 + MEMORY3_coef * MEMORY3 + LANG2_coef * LANG2 + DIVATT1_coef * DIVATT1 + DIVATT4_coef * DIVATT4
+                if y <= 0:
+                    st.write("很抱歉，无法估算患者的海马体体积")
+                else:
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        st.write("基于上方填写的信息，该患者的海马体体积是")
+                    with col2:
+                        st.subheader("🧠" + str(y)[0:9])
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        st.write("该患者在所有受试者中，海马体体积的分位数为")
+                    with col2:
+                        yy_number = sum(item <= y for item in CA)
+                        yy = yy_number / len(CA) * 100
+                        st.subheader("👍" + str(yy)[:5] + "%")
+                    fig = plt.figure()
+                    plt.hist(CA, bins=100, density=1, histtype="step", cumulative=1, color="b",
+                             label="Historical patient hippocampal volume")
+                    plt.axvline(y, c="r", label="Current patient's hippocampal volume", alpha=0.6)
+                    plt.legend()
+                    plt.savefig("result.jpg")
+                    st.image("result.jpg")
+
+        # 第二阶段：69年2月-76年1月
+        if (int(year[:-1]) == 69 and int(month[:-1]) >= 2) or (int(year[:-1]) in list(range(70, 76))) or (
+                int(year[:-1]) == 76 and int(month[:-1]) <= 1):
+            AGE = int(year[:-1]) + float(month[:-1]) / 12
+            st.write("⚠️请注意：上方选择的患者年龄是" + year + month)
+            st.subheader("请填写下方相关信息📃")
+            GENDER = st.selectbox("1️⃣请选择性别", ("男", "女"), index=None, placeholder="点击下拉选择")
+            if GENDER == "男":
+                GENDER = 1
+            else:
+                GENDER = 2
+            EDUCATION = st.text_input("2️⃣请输入受教育程度（8年至20年）", placeholder="例：11")
+            if EDUCATION.isdigit():
+                EDUCATION = float(EDUCATION)
+                if EDUCATION < 8 or EDUCATION > 20:
+                    st.write("输入范围应位于[8,20]，请重新输入")
+            elif EDUCATION.isascii() and EDUCATION != "":
+                items = EDUCATION.split(("."))
+                if len(items) == 2 and items[0].isdigit() and items[1].isdigit():
+                    EDUCATION = float(EDUCATION)
+                elif len(items) != 2:
+                    st.write("输入不符合规范，请重新输入")
+            elif EDUCATION.isdigit() == False and EDUCATION != "":
+                st.write("输入不符合规范，请重新输入")
+            M1 = st.text_input("3️⃣请输入M1（0.51-0.92）", placeholder="例：0.6333")
+            if M1.isdigit():
+                M1 = float(M1)
+                if M1 < 0.51 or M1 > 0.92:
+                    st.write("输入范围应位于[0.51,0.92]，请重新输入")
+            elif M1.isascii() and M1 != "":
+                items = M1.split(("."))
+                if len(items) == 2 and items[0].isdigit() and items[1].isdigit():
+                    M1 = float(M1)
+                elif len(items) != 2:
+                    st.write("输入不符合规范，请重新输入")
+            elif M1.isdigit() == False and M1 != "":
+                st.write("输入不符合规范，请重新输入")
+            ORGAN3 = st.selectbox("4️⃣请选择ORGAN3", (1, 2, 3, 4, 9), index=None,
+                                  placeholder="点击下拉选择")
+            LANG9 = st.selectbox("5️⃣请选择LANG9", (1, 2, 3, 4, 9), index=None,
+                                 placeholder="点击下拉选择")
+            PHC_LAN = st.text_input("6️⃣请输入PHC_LAN（-1.16-2.59）", placeholder="例：2.33")
+            try:
+                PHC_LAN = float(PHC_LAN)
+                if PHC_LAN < -1.16 or PHC_LAN > 2.59:
+                    st.write("输入不在规定范围内，请重新输入！")
+            except ValueError:
+                if PHC_LAN != "":
+                    st.write("输入不是一个数字，请重新输入！")
+            VISSPAT1 = st.selectbox("7️⃣请选择VISSPAT1", (1, 2, 3, 4, 9), index=None,
+                                    placeholder="点击下拉选择")
+            VISSPAT7 = st.selectbox("8️⃣请选择VISSPAT7", (1, 2, 3, 9), index=None,
+                                    placeholder="点击下拉选择")
+            DIVATT4 = st.selectbox("9️⃣请选择DIVATT4", (1, 2, 3, 4, 9), index=None,
+                                   placeholder="点击下拉选择")
+            MEMORY7 = st.selectbox("1️⃣0️⃣请选择MEMORY7", (1, 2, 3, 4, 9), index=None,
+                                   placeholder="点击下拉选择")
+            MEMORY4 = st.selectbox("1️⃣1️⃣请选择MEMORY4", (1, 2, 3, 4), index=None,
+                                   placeholder="点击下拉选择")
+            ORGAN5 = st.selectbox("1️⃣2️⃣请选择ORGAN5", (1, 2, 3, 4, 9), index=None, placeholder="点击下拉选择")
+
+            GDTOTAL = st.selectbox("1️⃣3️⃣请选择GDTOTAL", list(range(11)), index=None, placeholder="点击下拉选择")
+            Q1SCORE_number = [0, 0.67, 1, 1.33, 1.67, 2, 2.33, 2.67, 3, 3.33, 3.67, 4, 4.33, 4.67, 5, 5.33, 5.67, 6,
+                              6.33, 6.67, 7, 7.33, 7.67, 8, 8.33, 8.67, 9]
+            Q1SCORE = st.selectbox("1️⃣4️⃣请选择Q1SCORE", Q1SCORE_number[:-2], index=None, placeholder="点击下拉选择")
+            Q4SCORE = st.selectbox("1️⃣5️⃣请选择Q4SCORE", list(range(11)), index=None,
+                                   placeholder="点击下拉选择")
+            Q7SCORE = st.selectbox("1️⃣6️⃣请选择Q7SCORE", (0, 1, 2, 3, 4, 5, 7), index=None,
+                                   placeholder="点击下拉选择")
+            Q8SCORE = st.selectbox("1️⃣7️⃣请选择Q8SCORE", list(range(13)), index=None,
+                                   placeholder="点击下拉选择")
+            Q9SCORE = st.selectbox("1️⃣8️⃣请选择Q9SCORE", list(range(5)), index=None,
+                                   placeholder="点击下拉选择")
+            Q13SCORE = st.selectbox("1️⃣9️⃣请选择Q13SCORE", list(range(6)), index=None, placeholder="点击下拉选择")
+
+            if GENDER != None and EDUCATION != None and M1 != None and ORGAN3 != None and LANG9 != None and PHC_LAN != None and VISSPAT1 != None and VISSPAT7 != None and DIVATT4 != None and MEMORY7 != None and MEMORY4 != None and ORGAN5 != None and GDTOTAL != None and Q1SCORE != None and Q4SCORE != None and Q7SCORE != None and Q8SCORE != None and Q9SCORE != None and Q13SCORE != None:
+                st.subheader("结果输出🖨️")
+                INTERCEPT_coef = 5890.306
+                AGE_coef = -27.592
+
+                if GENDER == 2:
+                    GENDER_coef = -140.051
+                else:
+                    GENDER_coef = 0
+                EDUCATION_coef = 15.568
+                M1_coef = -1897.396
+
+                if ORGAN3 == 2:
+                    ORGAN3_coef = -140.426
+                else:
+                    ORGAN3_coef = 0
+
+                if LANG9 == 9:
+                    LANG9_coef = -1529.840
+                else:
+                    LANG9_coef = 0
+
+                PHC_LAN_coef = 112.782
+
+                if VISSPAT1 == 3:
+                    VISSPAT1_coef = 385.341
+                else:
+                    VISSPAT1_coef = 0
+
+                if VISSPAT7 == 2:
+                    VISSPAT7_coef = -224.365
+                else:
+                    VISSPAT7_coef = 0
+
+                if DIVATT4 == 9:
+                    DIVATT4_coef = -562.555
+                else:
+                    DIVATT4_coef = 0
+
+                if MEMORY7 == 4:
+                    MEMORY7_coef = -361.477
+                else:
+                    MEMORY7_coef = 0
+
+                if MEMORY4 == 3:
+                    MEMORY4_coef = 158.445
+                else:
+                    MEMORY4_coef = 0
+
+                if ORGAN5 == 2:
+                    ORGAN5_coef = 90.572
+                elif ORGAN5 == 3:
+                    ORGAN5_coef = 125.491
+                else:
+                    ORGAN5_coef = 0
+
+                if GDTOTAL == 1:
+                    GDTOTAL_coef = -79.783
+                elif GDTOTAL == 2:
+                    GDTOTAL_coef = -140.542
+                elif GDTOTAL == 3:
+                    GDTOTAL_coef = -329.810
+                elif GDTOTAL == 4:
+                    GDTOTAL_coef = -414.621
+                else:
+                    GDTOTAL_coef = 0
+
+                if Q1SCORE == 1:
+                    Q1SCORE_coef = -91.354
+                elif Q1SCORE == 4:
+                    Q1SCORE_coef = -198.784
+                elif Q1SCORE == 6:
+                    Q1SCORE_coef = -399.927
+                elif Q1SCORE == 5:
+                    Q1SCORE_coef = -216.611
+                elif Q1SCORE == 2.33:
+                    Q1SCORE_coef = 325.379
+                elif Q1SCORE == 0.67:
+                    Q1SCORE_coef = 479.501
+                else:
+                    Q1SCORE_coef = 0
+
+                if Q4SCORE == 8:
+                    Q4SCORE_coef = -741.821
+                elif Q4SCORE == 4:
+                    Q4SCORE_coef = -108.199
+                elif Q4SCORE == 9:
+                    Q4SCORE_coef = -456.134
+                else:
+                    Q4SCORE_coef = 0
+
+                if Q7SCORE == 1:
+                    Q7SCORE_coef = -133.244
+                elif Q7SCORE == 3:
+                    Q7SCORE_coef = 560.618
+                elif Q7SCORE == 4:
+                    Q7SCORE_coef = 645.525
+                else:
+                    Q7SCORE_coef = 0
+
+                if Q8SCORE == 6:
+                    Q8SCORE_coef = -249.579
+                elif Q8SCORE == 7:
+                    Q8SCORE_coef = -301.252
+                else:
+                    Q8SCORE_coef = 0
+
+                if Q9SCORE == 2:
+                    Q9SCORE_coef = -1037.924
+                else:
+                    Q9SCORE_coef = 0
+
+                if Q13SCORE == 2:
+                    Q13SCORE_coef = -138.011
+                elif Q13SCORE == 3:
+                    Q13SCORE_coef = 523.437
+                else:
+                    Q13SCORE_coef = 0
+
+                y = INTERCEPT_coef + AGE_coef * AGE + GENDER_coef * GENDER + EDUCATION_coef * EDUCATION + M1_coef * M1 + ORGAN3_coef * ORGAN3 + LANG9_coef * LANG9 + PHC_LAN_coef * PHC_LAN + VISSPAT1_coef * VISSPAT1 + VISSPAT7_coef * VISSPAT7 + DIVATT4_coef * DIVATT4 + MEMORY7_coef * MEMORY7 + MEMORY4_coef * MEMORY4 + ORGAN5_coef * ORGAN5 + GDTOTAL_coef * GDTOTAL + Q1SCORE_coef * Q1SCORE + Q4SCORE_coef * Q4SCORE + Q7SCORE_coef * Q7SCORE + Q8SCORE_coef * Q8SCORE + Q9SCORE_coef * Q9SCORE + Q13SCORE_coef * Q13SCORE
+                if y <= 0:
+                    st.write("很抱歉，无法估算患者的海马体体积")
+                else:
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        st.write("基于你上方填写的信息，海马体体积是")
+                    with col2:
+                        st.subheader("🧠" + str(y)[0:9])
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        st.write("该患者在所有受试者中，海马体体积的分位数为")
+                    with col2:
+                        yy_number = sum(item <= y for item in CA)
+                        yy = yy_number / len(CA) * 100
+                        st.subheader("👍" + str(yy)[:5] + "%")
+                    fig = plt.figure()
+                    plt.hist(CA, bins=100, density=1, histtype="step", cumulative=1, color="b",
+                             label="Historical patient hippocampal volume")
+                    plt.axvline(y, c="r", label="Current patient's hippocampal volume", alpha=0.6)
+                    plt.legend()
+                    plt.savefig("result.jpg")
+                    st.image("result.jpg")
+
+        # 第三阶段：76年2月-87年11月
+        if (int(year[:-1]) == 76 and int(month[:-1]) >= 2) or (int(year[:-1]) in list(range(77, 87))) or (
+                int(year[:-1]) == 87 and int(month[:-1]) <= 11):
+            AGE = int(year[:-1]) + float(month[:-1]) / 12
+            st.write("⚠️请注意：上方选择的患者年龄是" + year + month)
+            st.subheader("请填写下方相关信息📃")
+            GENDER = st.selectbox("1️⃣请选择性别", ("男", "女"), index=None, placeholder="点击下拉选择")
+            if GENDER == "男":
+                GENDER = 1
+            else:
+                GENDER = 2
+            Q1SCORE_number = [0, 0.67, 1, 1.33, 1.67, 2, 2.33, 2.67, 3, 3.33, 3.67, 4, 4.33, 4.67, 5, 5.33, 5.67, 6,
+                              6.33, 6.67, 7, 7.33, 7.67, 8, 8.33, 8.67, 9]
+            Q1SCORE = st.selectbox("2️⃣请选择Q1SCORE", Q1SCORE_number[:-2], index=None, placeholder="点击下拉选择")
+            Q4SCORE = st.selectbox("3️⃣请选择Q4SCORE", list(range(11)), index=None,
+                                   placeholder="点击下拉选择")
+            Q6SCORE = st.selectbox("4️⃣请选择Q6SCORE", list(range(5)), index=None,
+                                   placeholder="点击下拉选择")
+            Q7SCORE = st.selectbox("5️⃣请选择Q7SCORE", (0, 1, 2, 3, 4, 5, 7), index=None,
+                                   placeholder="点击下拉选择")
+            Q8SCORE = st.selectbox("6️⃣请选择Q8SCORE", list(range(13)), index=None,
+                                   placeholder="点击下拉选择")
+            Q13SCORE = st.selectbox("7️⃣请选择Q13SCORE", list(range(6)), index=None, placeholder="点击下拉选择")
+            MEMORY2 = st.selectbox("8️⃣请选择MEMORY2", (1, 2, 3, 4, 9), index=None,
+                                   placeholder="点击下拉选择")
+            MEMORY5 = st.selectbox("9️⃣请选择MEMORY5", (1, 2, 3, 4, 9), index=None,
+                                   placeholder="点击下拉选择")
+            MEMORY8 = st.selectbox("1️⃣0️⃣请选择MEMORY8", (1, 2, 3, 4, 9), index=None,
+                                   placeholder="点击下拉选择")
+            LANG8 = st.selectbox("1️⃣1️⃣请选择LANG8", (1, 2, 3, 4, 9), index=None,
+                                 placeholder="点击下拉选择")
+            LANG9 = st.selectbox("1️⃣2️⃣请选择LANG9", (1, 2, 3, 4, 9), index=None,
+                                 placeholder="点击下拉选择")
+            DIVATT4 = st.selectbox("1️⃣3️⃣请选择DIVATT4", (1, 2, 3, 4, 9), index=None,
+                                   placeholder="点击下拉选择")
+            CDORIENT = st.selectbox("1️⃣4️⃣请选择CDORIENT", (0, 0.5, 1, 2), index=None, placeholder="点击下拉选择")
+            CDGLOBAL = st.selectbox("1️⃣5️⃣请选择CDGLOBAL", (0, 0.5, 1, 2), index=None, placeholder="点击下拉选择")
+            PTNOTRT = st.selectbox("1️⃣6️⃣请选择PTNOTRT", (0, 1, 2), index=None, placeholder="点击下拉选择")
+            APGEN = st.selectbox("1️⃣7️⃣请选择APGEN", (1, 2, 3, 4, 5, 6), index=None, placeholder="点击下拉选择")
+            ORGAN5 = st.selectbox("1️⃣8️⃣请选择ORGAN5", (1, 2, 3, 4, 9), index=None, placeholder="点击下拉选择")
+            if GENDER != None and Q1SCORE != None and Q4SCORE != None and Q6SCORE != None and Q7SCORE != None and Q8SCORE != None and Q13SCORE != None and MEMORY2 != None and MEMORY5 != None and MEMORY8 != None and LANG8 != None and LANG9 != None and DIVATT4 != None and CDORIENT != None and CDGLOBAL != None and PTNOTRT != None and APGEN != None and ORGAN5 != None:
+                st.subheader("结果输出🖨️")
+                INTERCEPT_coef = 2454.09
+
+                if GENDER == 2:
+                    GENDER_coef = -91.92
+                else:
+                    GENDER_coef = 0
+
+                if Q1SCORE == 2:
+                    Q1SCORE_coef = -151.23
+                elif Q1SCORE == 2.67:
+                    Q1SCORE_coef = -182.13
+                elif Q1SCORE == 3.33:
+                    Q1SCORE_coef = 250.45
+                elif Q1SCORE == 4.33:
+                    Q1SCORE_coef = 340.65
+                elif Q1SCORE == 5:
+                    Q1SCORE_coef = -125.53
+                elif Q1SCORE == 6:
+                    Q1SCORE_coef = 366.63
+                elif Q1SCORE == 6.33:
+                    Q1SCORE_coef = -137.72
+                elif Q1SCORE == 6.67:
+                    Q1SCORE_coef = 679.17
+                else:
+                    Q1SCORE_coef = 0
+
+                if Q4SCORE == 8:
+                    Q4SCORE_coef = -245.57
+                elif Q4SCORE == 10:
+                    Q4SCORE_coef = -409.3
+                else:
+                    Q4SCORE_coef = 0
+
+                if Q6SCORE == 1:
+                    Q6SCORE_coef = 258.94
+                else:
+                    Q6SCORE_coef = 0
+
+                if Q7SCORE == 1:
+                    Q7SCORE_coef = -153.37
+                elif Q7SCORE == 2:
+                    Q7SCORE_coef = -309.04
+                elif Q7SCORE == 3:
+                    Q7SCORE_coef = -307.37
+                elif Q7SCORE == 4:
+                    Q7SCORE_coef = -655.46
+                else:
+                    Q7SCORE_coef = 0
+
+                if Q8SCORE == 6:
+                    Q8SCORE_coef = -232.05
+                elif Q8SCORE == 7:
+                    Q8SCORE_coef = 163.64
+                elif Q8SCORE == 9:
+                    Q8SCORE_coef = -420.74
+                else:
+                    Q8SCORE_coef = 0
+
+                if Q13SCORE == 1:
+                    Q13SCORE_coef = -104.78
+                else:
+                    Q13SCORE_coef = 0
+
+                if MEMORY2 == 2:
+                    MEMORY2_coef = 121.99
+                else:
+                    MEMORY2_coef = 0
+
+                if MEMORY5 == 4:
+                    MEMORY5_coef = -312.63
+                else:
+                    MEMORY5_coef = 0
+
+                if MEMORY8 == 9:
+                    MEMORY8_coef = 711.99
+                else:
+                    MEMORY8_coef = 0
+
+                if LANG8 == 3:
+                    LANG8_coef = 209.39
+                else:
+                    LANG8_coef = 0
+
+                if LANG9 == 2:
+                    LANG9_coef = -99.77
+                else:
+                    LANG9_coef = 0
+
+                if DIVATT4 == 2:
+                    DIVATT4_coef = -148.21
+                elif DIVATT4 == 9:
+                    DIVATT4_coef = 651.39
+                else:
+                    DIVATT4_coef = 0
+
+                if CDORIENT == 0.5:
+                    CDORIENT_coef = -224.69
+                else:
+                    CDORIENT_coef = 0
+
+                if CDGLOBAL == 0.5:
+                    CDGLOBAL_coef = -207.1
+                else:
+                    CDGLOBAL_coef = 0
+
+                if PTNOTRT == 1:
+                    PTNOTRT_coef = 197
+                else:
+                    PTNOTRT_coef = 0
+
+                if APGEN == 5:
+                    APGEN_coef = 311.77
+                else:
+                    APGEN_coef = 0
+
+                if ORGAN5 == 9:
+                    ORGAN5_coef = -681.23
+                else:
+                    ORGAN5_coef = 0
+                y = INTERCEPT_coef + Q1SCORE_coef * Q1SCORE + Q4SCORE_coef * Q4SCORE + Q6SCORE_coef * Q6SCORE + Q7SCORE_coef * Q7SCORE + Q8SCORE_coef * Q8SCORE + Q13SCORE_coef * Q13SCORE + MEMORY2_coef * MEMORY2 + MEMORY5_coef * MEMORY5 + MEMORY8_coef * MEMORY8 + LANG8_coef * LANG8 + LANG9_coef * LANG9 + DIVATT4_coef * DIVATT4 + CDORIENT_coef * CDORIENT + CDGLOBAL_coef * CDGLOBAL + PTNOTRT_coef * PTNOTRT + APGEN_coef * APGEN + ORGAN5_coef * ORGAN5
+                if y <= 0:
+                    st.write("很抱歉，无法估算患者的海马体体积")
+                else:
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        st.write("基于你上方填写的信息，海马体体积是")
+                    with col2:
+                        st.subheader("🧠" + str(y)[0:9])
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        st.write("该患者在所有受试者中，海马体体积的分位数为")
+                    with col2:
+                        yy_number = sum(item <= y for item in CA)
+                        yy = yy_number / len(CA) * 100
+                        st.subheader("👍" + str(yy)[:5] + "%")
+                    fig = plt.figure()
+                    plt.hist(CA, bins=100, density=1, histtype="step", cumulative=1, color="b",
+                             label="Historical patient hippocampal volume")
+                    plt.axvline(y, c="r", label="Current patient's hippocampal volume", alpha=0.6)
+                    plt.legend()
+                    plt.savefig("result.jpg")
+                    st.image("result.jpg")
+elif selection == "受教育程度":
+    st.subheader("请在下方选择患者的受教育程度🧑")
+    EDUCATION = st.selectbox("单位：年", list(range(8, 21)), index=None, placeholder="点击下拉选择")
+    # 第一阶段：8-14
+    if EDUCATION in list(range(8, 15)):
+        year, month = None, None
+        year_number = list(range(55, 88))
+        for i in range(len(year_number)):
+            year_number[i] = str(year_number[i]) + "岁"
+        year = st.selectbox("1️⃣请选择年龄（单位：年）", year_number, index=None, placeholder="点击下拉选择")
+        month_number = list(range(12))
+        for i in range(len(month_number)):
+            month_number[i] = str(month_number[i]) + "月"
+        month = st.selectbox("2️⃣请选择年龄（单位：月）", month_number, index=None, placeholder="点击下拉选择")
+        if year is not None and month is not None:
+            AGE = int(year[:-1]) + float(month[:-1]) / 12
+        GENDER = st.selectbox("3️⃣请选择性别", ("男", "女"), index=None, placeholder="点击下拉选择")
         if GENDER == "男":
             GENDER = 1
         else:
             GENDER = 2
-        EDUCATION = st.text_input("2️⃣请输入受教育程度（8年至20年）", placeholder="例：11")
-        if EDUCATION.isdigit():
-            EDUCATION = float(EDUCATION)
-            if EDUCATION < 8 or EDUCATION > 20:
-                st.write("输入范围应位于[8,20]，请重新输入")
-        elif EDUCATION.isascii() and EDUCATION != "":
-            items = EDUCATION.split(("."))
-            if len(items) == 2 and items[0].isdigit() and items[1].isdigit():
-                EDUCATION = float(EDUCATION)
-            elif len(items) != 2:
-                st.write("输入不符合规范，请重新输入")
-        elif EDUCATION.isdigit() == False and EDUCATION != "":
-            st.write("输入不符合规范，请重新输入")
-        DIAGNOSIS = st.selectbox("3️⃣请选择诊断结果", ("NL", "MCI", "DEMEMTIA"), index=None,
+        DIAGNOSIS = st.selectbox("4️⃣请选择诊断结果", ("NL", "MCI", "DEMEMTIA"), index=None,
                                  placeholder="点击下拉选择")
         if DIAGNOSIS == "NL":
             DIAGNOSIS = 1
@@ -133,561 +731,521 @@ if year is not None and month is not None:
             DIAGNOSIS = 2
         else:
             DIAGNOSIS = 3
-        APGEN = st.selectbox("4️⃣请选择APGEN", (2, 3, 4, 5, 6), index=None, placeholder="点击下拉选择")
-        CDORIENT = st.selectbox("5️⃣请选择CDORIENT", (0, 0.5, 1, 2), index=None, placeholder="点击下拉选择")
-        GDMEMORY = st.selectbox("6️⃣请选择GDMEMORY", (0, 1), index=None, placeholder="点击下拉选择")
-        GDTOTAL = st.selectbox("7️⃣请选择GDTOTAL", list(range(8)), index=None, placeholder="点击下拉选择")
-        Q1SCORE_number = [0, 0.67, 1, 1.33, 1.67, 2, 2.33, 2.67, 3, 3.33, 3.67, 4, 4.33, 4.67, 5, 5.33, 5.67, 6, 6.33,
-                          6.67, 7, 7.33, 7.67, 8, 8.33, 8.67, 9]
-        Q1SCORE = st.selectbox("8️⃣请选择Q1SCORE", Q1SCORE_number, index=None, placeholder="点击下拉选择")
-        Q4SCORE = st.selectbox("9️⃣请选择Q4SCORE", list(range(11)), index=None,
+        DIVATT4 = st.selectbox("5️⃣请选择DIVATT4", (1, 2, 3, 4, 9), index=None,
                                placeholder="点击下拉选择")
-        Q8SCORE = st.selectbox("1️⃣0️⃣请选择Q8SCORE", list(range(13)), index=None,
-                               placeholder="点击下拉选择")
-        Q11SCORE = st.selectbox("1️⃣1️⃣请选择Q11SCORE", list(range(4)), index=None, placeholder="点击下拉选择")
-        Q13SCORE = st.selectbox("1️⃣2️⃣请选择Q13SCORE", list(range(6)), index=None, placeholder="点击下拉选择")
-        VISSPAT4 = st.selectbox("1️⃣3️⃣请选择VISSPAT4", (1, 2, 3, 4, 9), index=None,
+        VISSPAT7 = st.selectbox("6️⃣请选择VISSPAT7", (1, 2, 3, 9), index=None,
                                 placeholder="点击下拉选择")
-        MEMORY3 = st.selectbox("1️⃣4️⃣请选择MEMORY3", (1, 2, 3, 4, 9), index=None,
-                               placeholder="点击下拉选择")
-        LANG2 = st.selectbox("1️⃣5️⃣请选择LANG2", (1, 2, 3, 4, 9), index=None, placeholder="点击下拉选择")
-        DIVATT1 = st.selectbox("1️⃣6️⃣请选择DIVATT1", (1, 2, 3, 4, 9), index=None,
-                               placeholder="点击下拉选择")
-        DIVATT4 = st.selectbox("1️⃣7️⃣请选择DIVATT4", (1, 2, 3, 4, 9), index=None,
-                               placeholder="点击下拉选择")
-        if GENDER != None and EDUCATION != None and DIAGNOSIS != None and APGEN != None and CDORIENT != None and GDMEMORY != None and GDTOTAL != None and Q1SCORE != None and Q4SCORE != None and Q8SCORE != None and Q11SCORE != None and Q13SCORE != None and VISSPAT4 != None and MEMORY3 != None and LANG2 != None and DIVATT1 != None and DIVATT4 != None:
-            st.header("结果输出🖨️")
-            INTERCEPT_coef = 3724.457
-            AGE_coef = -14.796
-
-            if GENDER == 2:
-                GENDER_coef = -265.635
-            else:
-                GENDER_coef = 0
-            EDUCATION_coef = -7.330
-
-            if DIAGNOSIS == 2:
-                DIAGNOSIS_coef = -171.177
-            elif DIAGNOSIS == 3:
-                DIAGNOSIS_coef = 340.242
-            else:
-                DIAGNOSIS_coef = 0
-
-            if APGEN == 3:
-                APGEN_coef = 188.120
-            else:
-                APGEN_coef = 0
-
-            if CDORIENT == 1:
-                CDORIENT_coef = -534.272
-            else:
-                CDORIENT_coef = 0
-
-            if GDMEMORY == 1:
-                GDMEMORY_coef = -254.921
-            else:
-                GDMEMORY_coef = 0
-
-            if GDTOTAL == 4:
-                GDTOTAL_coef = 404.145
-            elif GDTOTAL == 3:
-                GDTOTAL_coef = 323.347
-            elif GDTOTAL == 2:
-                GDTOTAL_coef = 205.479
-            elif GDTOTAL == 1:
-                GDTOTAL_coef = 108.149
-            else:
-                GDTOTAL_coef = 0
-
-            if Q1SCORE == 5.33:
-                Q1SCORE_coef = 444.663
-            elif Q1SCORE == 5:
-                Q1SCORE_coef = 146.203
-            elif Q1SCORE == 3.33:
-                Q1SCORE_coef = 297.443
-            elif Q1SCORE == 2.33:
-                Q1SCORE_coef = 192.840
-            elif Q1SCORE == 5.67:
-                Q1SCORE_coef = -377.258
-            elif Q1SCORE == 1.67:
-                Q1SCORE_coef = 313.529
-            else:
-                Q1SCORE_coef = 0
-
-            if Q4SCORE == 9:
-                Q4SCORE_coef = -855.968
-            elif Q4SCORE == 10:
-                Q4SCORE_coef = -887.173
-            else:
-                Q4SCORE_coef = 0
-
-            if Q8SCORE == 4:
-                Q8SCORE_coef = -90.860
-            elif Q8SCORE == 1:
-                Q8SCORE_coef = 163.155
-            else:
-                Q8SCORE_coef = 0
-
-            if Q11SCORE == 1:
-                Q11SCORE_coef = -342.146
-            else:
-                Q11SCORE_coef = 0
-
-            if Q13SCORE == 3:
-                Q13SCORE_coef = 456.490
-            else:
-                Q13SCORE_coef = 0
-
-            if VISSPAT4 == 2:
-                VISSPAT4_coef = 120.407
-            else:
-                VISSPAT4_coef = 0
-
-            if MEMORY3 == 4:
-                MEMORY3_coef = 169.713
-            else:
-                MEMORY3_coef = 0
-
-            if LANG2 == 9:
-                LANG2_coef = -201.520
-            elif LANG2 == 4:
-                LANG2_coef = -381.351
-            else:
-                LANG2_coef = 0
-
-            if DIVATT1 == 4:
-                DIVATT1_coef = 98.634
-            elif DIVATT1 == 2:
-                DIVATT1_coef = -121.042
-            else:
-                DIVATT1_coef = 0
-
-            if DIVATT4 == 9:
-                DIVATT4_coef = 405.506
-            elif DIVATT4 == 2:
-                DIVATT4_coef = 200.565
-            else:
-                DIVATT4_coef = 0
-
-            y = INTERCEPT_coef + AGE_coef * AGE + GENDER_coef * GENDER + EDUCATION_coef * EDUCATION + DIAGNOSIS_coef * DIAGNOSIS + APGEN_coef * APGEN + CDORIENT_coef * CDORIENT + GDMEMORY_coef * GDMEMORY + GDTOTAL_coef * GDTOTAL + Q1SCORE_coef * Q1SCORE + Q4SCORE_coef * Q4SCORE + Q8SCORE_coef * Q8SCORE + Q11SCORE_coef * Q11SCORE + Q13SCORE_coef * Q13SCORE + VISSPAT4_coef * VISSPAT4 + MEMORY3_coef * MEMORY3 + LANG2_coef * LANG2 + DIVATT1_coef * DIVATT1 + DIVATT4_coef * DIVATT4
-            col1, col2 = st.columns(2)
-            with col1:
-                st.write("基于上方填写的信息，该患者的海马体体积是")
-            with col2:
-                st.header("🧠" + str(y)[0:9])
-            col1, col2 = st.columns(2)
-            with col1:
-                st.write("该患者在所有受试者中，海马体体积的分位数为")
-            with col2:
-                yy_number = sum(item <= y for item in CA)
-                yy = yy_number / len(CA) * 100
-                st.header("👍" + str(yy)[:5] + "%")
-            fig = plt.figure()
-            plt.hist(CA, bins=100, density=1, histtype="step", cumulative=1, color="b",
-                     label="Historical patient hippocampal volume")
-            plt.axvline(y, c="r", label="Current patient's hippocampal volume", alpha=0.6)
-            plt.legend()
-            plt.savefig("result.jpg")
-            st.image("result.jpg")
-
-    # 第二阶段：69年2月-76年1月
-    if (int(year[:-1]) == 69 and int(month[:-1]) >= 2) or (int(year[:-1]) in list(range(70, 76))) or (
-            int(year[:-1]) == 76 and int(month[:-1]) <= 1):
-        AGE = int(year[:-1]) + float(month[:-1]) / 12
-        st.write("⚠️请注意：上方选择的患者年龄是" + year + month)
-        st.header("请填写下方相关信息📃")
-        GENDER = st.selectbox("1️⃣请选择性别", ("男", "女"), index=None, placeholder="点击下拉选择")
-        if GENDER == "男":
-            GENDER = 1
-        else:
-            GENDER = 2
-        EDUCATION = st.text_input("2️⃣请输入受教育程度（8年至20年）", placeholder="例：11")
-        if EDUCATION.isdigit():
-            EDUCATION = float(EDUCATION)
-            if EDUCATION < 8 or EDUCATION > 20:
-                st.write("输入范围应位于[8,20]，请重新输入")
-        elif EDUCATION.isascii() and EDUCATION != "":
-            items = EDUCATION.split(("."))
-            if len(items) == 2 and items[0].isdigit() and items[1].isdigit():
-                EDUCATION = float(EDUCATION)
-            elif len(items) != 2:
-                st.write("输入不符合规范，请重新输入")
-        elif EDUCATION.isdigit() == False and EDUCATION != "":
-            st.write("输入不符合规范，请重新输入")
-        M1 = st.text_input("3️⃣请输入M1（0.51-0.92）", placeholder="例：0.6333")
-        if M1.isdigit():
-            M1 = float(M1)
-            if M1 < 0.51 or M1 > 0.92:
-                st.write("输入范围应位于[0.51,0.92]，请重新输入")
-        elif M1.isascii() and M1 != "":
-            items = M1.split(("."))
-            if len(items) == 2 and items[0].isdigit() and items[1].isdigit():
-                M1 = float(M1)
-            elif len(items) != 2:
-                st.write("输入不符合规范，请重新输入")
-        elif M1.isdigit() == False and M1 != "":
-            st.write("输入不符合规范，请重新输入")
-        ORGAN3 = st.selectbox("4️⃣请选择ORGAN3", (1, 2, 3, 4, 9), index=None,
-                              placeholder="点击下拉选择")
-        LANG9 = st.selectbox("5️⃣请选择LANG9", (1, 2, 3, 4, 9), index=None,
-                             placeholder="点击下拉选择")
-        PHC_LAN = st.text_input("6️⃣请输入PHC_LAN（-1.16-2.59）", placeholder="例：2.33")
-        if (PHC_LAN.startswith("-") and PHC_LAN[1:] or PHC_LAN).isdigit():
+        R2 = st.text_input("7️⃣请输入R2（0.49-0.95）", placeholder="例：0.6333")
+        try:
+            R2 = float(R2)
+            if R2 < 0.49 or R2 > 0.95:
+                st.write("输入不在规定范围内，请重新输入！")
+        except ValueError:
+            if R2 != "":
+                st.write("输入不是一个数字，请重新输入！")
+        GDAFRAID = st.selectbox("8️⃣请选择GDAFRAID", (0, 1), index=None,
+                                placeholder="点击下拉选择")
+        APGEN = st.selectbox("9️⃣请选择APGEN", (2, 3, 4, 5, 6), index=None, placeholder="点击下拉选择")
+        LANG7 = st.selectbox("1️⃣0️⃣请选择LANG7", (1, 2, 3, 4, 9), index=None, placeholder="点击下拉选择")
+        PLAN1 = st.selectbox("1️⃣1️⃣请选择PLAN1", (1, 2, 3, 4, 9), index=None, placeholder="点击下拉选择")
+        PHC_LAN = st.text_input("1️⃣2️⃣请输入PHC_LAN（-1.16-2.59）", placeholder="例：2.33")
+        try:
             PHC_LAN = float(PHC_LAN)
-            if PHC_LAN < -1.16 or PHC_LAN > 0.92:
-                st.write("输入范围应位于[-1.16,2.59]，请重新输入")
-        elif PHC_LAN.isascii() and PHC_LAN != "":
-            items = PHC_LAN.split(("."))
-            if len(items) == 2 and (items[0].startswith("-") and items[0][1:]).isdigit() and items[1].isdigit():
-                PHC_LAN = float(PHC_LAN)
-            elif len(items) != 2:
-                st.write("输入不符合规范，请重新输入")
-        elif PHC_LAN.isdigit() == False and PHC_LAN != "":
-            st.write("输入不符合规范，请重新输入")
-        VISSPAT1 = st.selectbox("7️⃣请选择VISSPAT1", (1, 2, 3, 4, 9), index=None,
-                                placeholder="点击下拉选择")
-        VISSPAT7 = st.selectbox("8️⃣请选择VISSPAT7", (1, 2, 3, 9), index=None,
-                                placeholder="点击下拉选择")
-        DIVATT4 = st.selectbox("9️⃣请选择DIVATT4", (1, 2, 3, 4, 9), index=None,
-                               placeholder="点击下拉选择")
-        MEMORY7 = st.selectbox("1️⃣0️⃣请选择MEMORY7", (1, 2, 3, 4, 9), index=None,
-                               placeholder="点击下拉选择")
-        MEMORY4 = st.selectbox("1️⃣1️⃣请选择MEMORY4", (1, 2, 3, 4), index=None,
-                               placeholder="点击下拉选择")
-        ORGAN5 = st.selectbox("1️⃣2️⃣请选择ORGAN5", (1, 2, 3, 4, 9), index=None, placeholder="点击下拉选择")
-
-        GDTOTAL = st.selectbox("1️⃣3️⃣请选择GDTOTAL", list(range(11)), index=None, placeholder="点击下拉选择")
-        Q1SCORE_number = [0, 0.67, 1, 1.33, 1.67, 2, 2.33, 2.67, 3, 3.33, 3.67, 4, 4.33, 4.67, 5, 5.33, 5.67, 6,
-                          6.33, 6.67, 7, 7.33, 7.67, 8, 8.33, 8.67, 9]
-        Q1SCORE = st.selectbox("1️⃣4️⃣请选择Q1SCORE", Q1SCORE_number[:-2], index=None, placeholder="点击下拉选择")
-        Q4SCORE = st.selectbox("1️⃣5️⃣请选择Q4SCORE", list(range(11)), index=None,
-                               placeholder="点击下拉选择")
-        Q7SCORE = st.selectbox("1️⃣6️⃣请选择Q7SCORE", (0, 1, 2, 3, 4, 5, 7), index=None,
-                               placeholder="点击下拉选择")
-        Q8SCORE = st.selectbox("1️⃣8️⃣请选择Q8SCORE", list(range(13)), index=None,
-                               placeholder="点击下拉选择")
-        Q9SCORE = st.selectbox("1️⃣9️⃣请选择Q9SCORE", list(range(5)), index=None,
-                               placeholder="点击下拉选择")
-        Q13SCORE = st.selectbox("2️⃣0️⃣请选择Q13SCORE", list(range(6)), index=None, placeholder="点击下拉选择")
-
-        if GENDER != None and EDUCATION != None and M1 != None and ORGAN3 != None and LANG9 != None and PHC_LAN != None and VISSPAT1 != None and VISSPAT7 != None and DIVATT4 != None and MEMORY7 != None and MEMORY4 != None and ORGAN5 != None and GDTOTAL != None and Q1SCORE != None and Q4SCORE != None and Q7SCORE != None and Q8SCORE != None and Q9SCORE != None and Q13SCORE != None:
-            st.header("结果输出🖨️")
-            INTERCEPT_coef = 5890.306
-            AGE_coef = -27.592
-
-            if GENDER == 2:
-                GENDER_coef = -140.051
-            else:
-                GENDER_coef = 0
-            EDUCATION_coef = 15.568
-            M1_coef = -1897.396
-
-            if ORGAN3 == 2:
-                ORGAN3_coef = -140.426
-            else:
-                ORGAN3_coef = 0
-
-            if LANG9 == 9:
-                LANG9_coef = -1529.840
-            else:
-                LANG9_coef = 0
-
-            PHC_LAN_coef = 112.782
-
-            if VISSPAT1 == 3:
-                VISSPAT1_coef = 385.341
-            else:
-                VISSPAT1_coef = 0
-
-            if VISSPAT7 == 2:
-                VISSPAT7_coef = -224.365
-            else:
-                VISSPAT7_coef = 0
-
-            if DIVATT4 == 9:
-                DIVATT4_coef = -562.555
-            else:
-                DIVATT4_coef = 0
-
-            if MEMORY7 == 4:
-                MEMORY7_coef = -361.477
-            else:
-                MEMORY7_coef = 0
-
-            if MEMORY4 == 3:
-                MEMORY4_coef = 158.445
-            else:
-                MEMORY4_coef = 0
-
-            if ORGAN5 == 2:
-                ORGAN5_coef = 90.572
-            elif ORGAN5 == 3:
-                ORGAN5_coef = 125.491
-            else:
-                ORGAN5_coef = 0
-
-            if GDTOTAL == 1:
-                GDTOTAL_coef = -79.783
-            elif GDTOTAL == 2:
-                GDTOTAL_coef = -140.542
-            elif GDTOTAL == 3:
-                GDTOTAL_coef = -329.810
-            elif GDTOTAL == 4:
-                GDTOTAL_coef = -414.621
-            else:
-                GDTOTAL_coef = 0
-
-            if Q1SCORE == 1:
-                Q1SCORE_coef = -91.354
-            elif Q1SCORE == 4:
-                Q1SCORE_coef = -198.784
-            elif Q1SCORE == 6:
-                Q1SCORE_coef = -399.927
-            elif Q1SCORE == 5:
-                Q1SCORE_coef = -216.611
-            elif Q1SCORE == 2.33:
-                Q1SCORE_coef = 325.379
-            elif Q1SCORE == 0.67:
-                Q1SCORE_coef = 479.501
-            else:
-                Q1SCORE_coef = 0
-
-            if Q4SCORE == 8:
-                Q4SCORE_coef = -741.821
-            elif Q4SCORE == 4:
-                Q4SCORE_coef = -108.199
-            elif Q4SCORE == 9:
-                Q4SCORE_coef = -456.134
-            else:
-                Q4SCORE_coef = 0
-
-            if Q7SCORE == 1:
-                Q7SCORE_coef = -133.244
-            elif Q7SCORE == 3:
-                Q7SCORE_coef = 560.618
-            elif Q7SCORE == 4:
-                Q7SCORE_coef = 645.525
-            else:
-                Q7SCORE_coef = 0
-
-            if Q8SCORE == 6:
-                Q8SCORE_coef = -249.579
-            elif Q8SCORE == 7:
-                Q8SCORE_coef = -301.252
-            else:
-                Q8SCORE_coef = 0
-
-            if Q9SCORE == 2:
-                Q9SCORE_coef = -1037.924
-            else:
-                Q9SCORE_coef = 0
-
-            if Q13SCORE == 2:
-                Q13SCORE_coef = -138.011
-            elif Q13SCORE == 3:
-                Q13SCORE_coef = 523.437
-            else:
-                Q13SCORE_coef = 0
-
-            y = INTERCEPT_coef + AGE_coef * AGE + GENDER_coef * GENDER + EDUCATION_coef * EDUCATION + M1_coef * M1 + ORGAN3_coef * ORGAN3 + LANG9_coef * LANG9 + PHC_LAN_coef * PHC_LAN + VISSPAT1_coef * VISSPAT1 + VISSPAT7_coef * VISSPAT7 + DIVATT4_coef * DIVATT4 + MEMORY7_coef * MEMORY7 + MEMORY4_coef * MEMORY4 + ORGAN5_coef * ORGAN5 + GDTOTAL_coef * GDTOTAL + Q1SCORE_coef * Q1SCORE + Q4SCORE_coef * Q4SCORE + Q7SCORE_coef * Q7SCORE + Q8SCORE_coef * Q8SCORE + Q9SCORE_coef * Q9SCORE + Q13SCORE_coef * Q13SCORE
-            col1, col2 = st.columns(2)
-            with col1:
-                st.write("基于你上方填写的信息，海马体体积是")
-            with col2:
-                st.header("🧠" + str(y)[0:9])
-            col1, col2 = st.columns(2)
-            with col1:
-                st.write("该患者在所有受试者中，海马体体积的分位数为")
-            with col2:
-                yy_number = sum(item <= y for item in CA)
-                yy = yy_number / len(CA) * 100
-                st.header("👍" + str(yy)[:5] + "%")
-            fig = plt.figure()
-            plt.hist(CA, bins=100, density=1, histtype="step", cumulative=1, color="b",
-                     label="Historical patient hippocampal volume")
-            plt.axvline(y, c="r", label="Current patient's hippocampal volume", alpha=0.6)
-            plt.legend()
-            plt.savefig("result.jpg")
-            st.image("result.jpg")
-
-    # 第三阶段：76年2月-87年11月
-    if (int(year[:-1]) == 76 and int(month[:-1]) >= 2) or (int(year[:-1]) in list(range(77, 87))) or (
-            int(year[:-1]) == 87 and int(month[:-1]) <= 11):
-        AGE = int(year[:-1]) + float(month[:-1]) / 12
-        st.write("⚠️请注意：上方选择的患者年龄是" + year + month)
-        st.header("请填写下方相关信息📃")
-        GENDER = st.selectbox("1️⃣请选择性别", ("男", "女"), index=None, placeholder="点击下拉选择")
-        if GENDER == "男":
-            GENDER = 1
-        else:
-            GENDER = 2
-        Q1SCORE_number = [0, 0.67, 1, 1.33, 1.67, 2, 2.33, 2.67, 3, 3.33, 3.67, 4, 4.33, 4.67, 5, 5.33, 5.67, 6,
-                          6.33, 6.67, 7, 7.33, 7.67, 8, 8.33, 8.67, 9]
-        Q1SCORE = st.selectbox("2️⃣请选择Q1SCORE", Q1SCORE_number[:-2], index=None, placeholder="点击下拉选择")
-        Q4SCORE = st.selectbox("3️⃣请选择Q4SCORE", list(range(11)), index=None,
-                               placeholder="点击下拉选择")
-        Q6SCORE = st.selectbox("4️⃣请选择Q6SCORE", list(range(5)), index=None,
-                               placeholder="点击下拉选择")
-        Q7SCORE = st.selectbox("5️⃣请选择Q7SCORE", (0, 1, 2, 3, 4, 5, 7), index=None,
-                               placeholder="点击下拉选择")
-        Q8SCORE = st.selectbox("6️⃣请选择Q8SCORE", list(range(13)), index=None,
-                               placeholder="点击下拉选择")
-        Q13SCORE = st.selectbox("7️⃣请选择Q13SCORE", list(range(6)), index=None, placeholder="点击下拉选择")
-        MEMORY2 = st.selectbox("8️⃣请选择MEMORY2", (1, 2, 3, 4, 9), index=None,
-                               placeholder="点击下拉选择")
-        MEMORY5 = st.selectbox("9️⃣请选择MEMORY5", (1, 2, 3, 4, 9), index=None,
-                               placeholder="点击下拉选择")
-        MEMORY8 = st.selectbox("1️⃣0️⃣请选择MEMORY8", (1, 2, 3, 4, 9), index=None,
-                               placeholder="点击下拉选择")
-        LANG8 = st.selectbox("1️⃣1️⃣请选择LANG8", (1, 2, 3, 4, 9), index=None,
-                             placeholder="点击下拉选择")
-        LANG9 = st.selectbox("1️⃣2️⃣请选择LANG9", (1, 2, 3, 4, 9), index=None,
-                             placeholder="点击下拉选择")
-        DIVATT4 = st.selectbox("1️⃣3️⃣请选择DIVATT4", (1, 2, 3, 4, 9), index=None,
+            if PHC_LAN < -1.16 or PHC_LAN > 2.59:
+                st.write("输入不在规定范围内，请重新输入！")
+        except ValueError:
+            if PHC_LAN != "":
+                st.write("输入不是一个数字，请重新输入！")
+        MEMORY7 = st.selectbox("1️⃣3️⃣请选择MEMORY7", (1, 2, 3, 4, 9), index=None,
                                placeholder="点击下拉选择")
         CDORIENT = st.selectbox("1️⃣4️⃣请选择CDORIENT", (0, 0.5, 1, 2), index=None, placeholder="点击下拉选择")
-        CDGLOBAL = st.selectbox("1️⃣5️⃣请选择CDGLOBAL", (0, 0.5, 1, 2), index=None, placeholder="点击下拉选择")
-        PTNOTRT = st.selectbox("1️⃣6️⃣请选择PTNOTRT", (0, 1, 2), index=None, placeholder="点击下拉选择")
-        APGEN = st.selectbox("1️⃣7️⃣请选择APGEN", (1, 2, 3, 4, 5, 6), index=None, placeholder="点击下拉选择")
-        ORGAN5 = st.selectbox("1️⃣8️⃣请选择ORGAN5", (1, 2, 3, 4, 9), index=None, placeholder="点击下拉选择")
-        if GENDER != None and Q1SCORE != None and Q4SCORE != None and Q6SCORE != None and Q7SCORE != None and Q8SCORE != None and Q13SCORE != None and MEMORY2 != None and MEMORY5 != None and MEMORY8 != None and LANG8 != None and LANG9 != None and DIVATT4 != None and CDORIENT != None and CDGLOBAL != None and PTNOTRT != None and APGEN != None and ORGAN5 != None:
-            st.header("结果输出🖨️")
-            INTERCEPT_coef = 2454.09
-
+        Q1SCORE_number = [0, 0.67, 1, 1.33, 1.67, 2, 2.33, 2.67, 3, 3.33, 3.67, 4, 4.33, 4.67, 5, 5.33, 5.67, 6,
+                          6.33,
+                          6.67, 7, 7.33, 7.67, 8, 8.33, 8.67, 9]
+        Q1SCORE = st.selectbox("1️⃣5️⃣请选择Q1SCORE", Q1SCORE_number, index=None, placeholder="点击下拉选择")
+        Q4SCORE = st.selectbox("1️⃣6️⃣请选择Q4SCORE", list(range(11)), index=None,
+                               placeholder="点击下拉选择")
+        Q5SCORE = st.selectbox("1️⃣7️⃣请选择Q5SCORE", list(range(5)), index=None,
+                               placeholder="点击下拉选择")
+        Q7SCORE = st.selectbox("1️⃣8️⃣请选择Q7SCORE", (0, 1, 2, 3, 4, 5, 7), index=None,
+                               placeholder="点击下拉选择")
+        Q8SCORE = st.selectbox("1️⃣9️⃣请选择Q8SCORE", list(range(13)), index=None,
+                               placeholder="点击下拉选择")
+        Q9SCORE = st.selectbox("2️⃣0️⃣请选择Q9SCORE", list(range(5)), index=None,
+                               placeholder="点击下拉选择")
+        if year != None and month != None and GENDER != None and DIAGNOSIS != None and EDUCATION != None and DIVATT4 != None and VISSPAT7 != None and R2 != None and GDAFRAID != None and APGEN != None and LANG7 != None and PLAN1 != None and PHC_LAN != None and MEMORY7 != None and CDORIENT != None and Q1SCORE != None and Q4SCORE != None and Q5SCORE != None and Q7SCORE != None and Q8SCORE != None and Q9SCORE != None:
+            st.subheader("结果输出🖨️")
+            INTERCEPT_coef = 4624.319
             if GENDER == 2:
-                GENDER_coef = -91.92
+                GENDER_coef = -203.933
             else:
                 GENDER_coef = 0
-
-            if Q1SCORE == 2:
-                Q1SCORE_coef = -151.23
-            elif Q1SCORE == 2.67:
-                Q1SCORE_coef = -182.13
-            elif Q1SCORE == 3.33:
-                Q1SCORE_coef = 250.45
-            elif Q1SCORE == 4.33:
-                Q1SCORE_coef = 340.65
-            elif Q1SCORE == 5:
-                Q1SCORE_coef = -125.53
-            elif Q1SCORE == 6:
-                Q1SCORE_coef = 366.63
-            elif Q1SCORE == 6.33:
-                Q1SCORE_coef = -137.72
-            elif Q1SCORE == 6.67:
-                Q1SCORE_coef = 679.17
+            AGE_coef = -17.639
+            if DIAGNOSIS == 2:
+                DIAGNOSIS_coef = -117.487
+            elif DIAGNOSIS == 3:
+                DIAGNOSIS_coef = -309.998
             else:
-                Q1SCORE_coef = 0
-
-            if Q4SCORE == 8:
-                Q4SCORE_coef = -245.57
-            elif Q4SCORE == 10:
-                Q4SCORE_coef = -409.3
-            else:
-                Q4SCORE_coef = 0
-
-            if Q6SCORE == 1:
-                Q6SCORE_coef = 258.94
-            else:
-                Q6SCORE_coef = 0
-
-            if Q7SCORE == 1:
-                Q7SCORE_coef = -153.37
-            elif Q7SCORE == 2:
-                Q7SCORE_coef = -309.04
-            elif Q7SCORE == 3:
-                Q7SCORE_coef = -307.37
-            elif Q7SCORE == 4:
-                Q7SCORE_coef = -655.46
-            else:
-                Q7SCORE_coef = 0
-
-            if Q8SCORE == 6:
-                Q8SCORE_coef = -232.05
-            elif Q8SCORE == 7:
-                Q8SCORE_coef = 163.64
-            elif Q8SCORE == 9:
-                Q8SCORE_coef = -420.74
-            else:
-                Q8SCORE_coef = 0
-
-            if Q13SCORE == 1:
-                Q13SCORE_coef = -104.78
-            else:
-                Q13SCORE_coef = 0
-
-            if MEMORY2 == 2:
-                MEMORY2_coef = 121.99
-            else:
-                MEMORY2_coef = 0
-
-            if MEMORY5 == 4:
-                MEMORY5_coef = -312.63
-            else:
-                MEMORY5_coef = 0
-
-            if MEMORY8 == 9:
-                MEMORY8_coef = 711.99
-            else:
-                MEMORY8_coef = 0
-
-            if LANG8 == 3:
-                LANG8_coef = 209.39
-            else:
-                LANG8_coef = 0
-
-            if LANG9 == 2:
-                LANG9_coef = -99.77
-            else:
-                LANG9_coef = 0
-
+                DIAGNOSIS_coef = 0
+            EDUCATION_coef = 8.879
             if DIVATT4 == 2:
-                DIVATT4_coef = -148.21
-            elif DIVATT4 == 9:
-                DIVATT4_coef = 651.39
+                DIVATT4_coef = -141.114
             else:
                 DIVATT4_coef = 0
-
-            if CDORIENT == 0.5:
-                CDORIENT_coef = -224.69
+            if VISSPAT7 == 2:
+                VISSPAT7_coef = -264.548
             else:
-                CDORIENT_coef = 0
-
-            if CDGLOBAL == 0.5:
-                CDGLOBAL_coef = -207.1
+                VISSPAT7_coef = 0
+            R2_coef = -1272.685
+            if GDAFRAID == 1:
+                GDAFRAID_coef = -316.06
             else:
-                CDGLOBAL_coef = 0
-
-            if PTNOTRT == 1:
-                PTNOTRT_coef = 197
-            else:
-                PTNOTRT_coef = 0
-
+                GDAFRAID_coef = 0
             if APGEN == 5:
-                APGEN_coef = 311.77
+                APGEN_coef = 486.223
             else:
                 APGEN_coef = 0
+            if LANG7 == 3:
+                LANG7_coef = 226.457
+            elif LANG7 == 2:
+                LANG7_coef = 307.873
+            else:
+                LANG7_coef = 0
+            if PLAN1 == 3:
+                PLAN1_coef = -291.899
+            else:
+                PLAN1_coef = 0
+            PHC_LAN_coef = 173.937
+            if MEMORY7 == 9:
+                MEMORY7_coef = 519.589
+            elif MEMORY7 == 2:
+                MEMORY7_coef = 193.282
+            elif MEMORY7 == 3:
+                MEMORY7_coef = 174.722
+            else:
+                MEMORY7_coef = 0
+            if CDORIENT == 1:
+                CDORIENT_coef = 515.536
+            else:
+                CDORIENT_coef = 0
+            if Q1SCORE == 2.33:
+                Q1SCORE_coef = 243.639
+            elif Q1SCORE == 5:
+                Q1SCORE_coef = 103.453
+            elif Q1SCORE == 5.33:
+                Q1SCORE_coef = 303.74
+            elif Q1SCORE == 1.67:
+                Q1SCORE_coef = 513.99
+            elif Q1SCORE == 6:
+                Q1SCORE_coef = -376.009
+            elif Q1SCORE == 3.33:
+                Q1SCORE_coef = 300.93
+            elif Q1SCORE == 3.67:
+                Q1SCORE_coef = 300.388
+            elif Q1SCORE == 2.67:
+                Q1SCORE_coef = 373.122
+            else:
+                Q1SCORE_coef = 0
+            if Q4SCORE == 1:
+                Q4SCORE_coef = 59.952
+            elif Q4SCORE == 7:
+                Q4SCORE_coef = -318.806
+            elif Q4SCORE == 10:
+                Q4SCORE_coef = -543.63
+            elif Q4SCORE == 8:
+                Q4SCORE_coef = 86.084
+            else:
+                Q4SCORE_coef = 0
+            if Q5SCORE == 1:
+                Q5SCORE_coef = 174.125
+            else:
+                Q5SCORE_coef = 0
+            if Q7SCORE == 1:
+                Q7SCORE_coef = -190.784
+            else:
+                Q7SCORE_coef = 0
+            if Q8SCORE == 3:
+                Q8SCORE_coef = -196.315
+            elif Q8SCORE == 4:
+                Q8SCORE_coef = 140.385
+            elif Q8SCORE == 12:
+                Q8SCORE_coef = -534.431
+            else:
+                Q8SCORE_coef = 0
+            if Q9SCORE == 2:
+                Q9SCORE_coef = -644.434
+            elif Q9SCORE == 3:
+                Q9SCORE_coef = -155.288
+            else:
+                Q9SCORE_coef = 0
+            y = INTERCEPT_coef + GENDER_coef * GENDER + AGE_coef * AGE + DIAGNOSIS_coef * DIAGNOSIS + EDUCATION_coef * EDUCATION + DIVATT4_coef * DIVATT4 + VISSPAT7_coef * VISSPAT7 + R2_coef * R2 + GDAFRAID_coef * GDAFRAID + APGEN_coef * APGEN + LANG7_coef * LANG7 + PLAN1_coef * PLAN1 + PHC_LAN_coef * PHC_LAN + MEMORY7_coef * MEMORY7 + CDORIENT_coef * CDORIENT + Q1SCORE_coef * Q1SCORE + Q4SCORE_coef * Q4SCORE + Q5SCORE_coef * Q5SCORE + Q7SCORE_coef * Q7SCORE + Q8SCORE_coef * Q8SCORE + Q9SCORE_coef * Q9SCORE
+            if y <= 0:
+                st.write("很抱歉，无法估算患者的海马体体积")
+            else:
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.write("基于你上方填写的信息，海马体体积是")
+                with col2:
+                    st.subheader("🧠" + str(y)[0:9])
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.write("该患者在所有受试者中，海马体体积的分位数为")
+                with col2:
+                    yy_number = sum(item <= y for item in CA)
+                    yy = yy_number / len(CA) * 100
+                    st.subheader("👍" + str(yy)[:5] + "%")
+                fig = plt.figure()
+                plt.hist(CA, bins=100, density=1, histtype="step", cumulative=1, color="b",
+                         label="Historical patient hippocampal volume")
+                plt.axvline(y, c="r", label="Current patient's hippocampal volume", alpha=0.6)
+                plt.legend()
+                plt.savefig("result.jpg")
+                st.image("result.jpg")
+    # 第二阶段：15-18
+    if EDUCATION in list(range(15, 19)):
+        year, month = None, None
+        year_number = list(range(55, 88))
+        for i in range(len(year_number)):
+            year_number[i] = str(year_number[i]) + "岁"
+        year = st.selectbox("1️⃣请选择年龄（单位：年） ", year_number, index=None, placeholder="点击下拉选择")
+        month_number = list(range(12))
+        for i in range(len(month_number)):
+            month_number[i] = str(month_number[i]) + "月"
+        month = st.selectbox("2️⃣请选择年龄（单位：月） ", month_number, index=None, placeholder="点击下拉选择")
+        if year is not None and month is not None:
+            AGE = int(year[:-1]) + float(month[:-1]) / 12
+        GENDER = st.selectbox("3️⃣请选择性别 ", ("男", "女"), index=None, placeholder="点击下拉选择")
+        if GENDER == "男":
+            GENDER = 1
+        else:
+            GENDER = 2
+        DIAGNOSIS = st.selectbox("4️⃣请选择诊断结果 ", ("NL", "MCI", "DEMEMTIA"), index=None,
+                                 placeholder="点击下拉选择")
+        if DIAGNOSIS == "NL":
+            DIAGNOSIS = 1
+        elif DIAGNOSIS == "MCI":
+            DIAGNOSIS = 2
+        else:
+            DIAGNOSIS = 3
+        Q1SCORE_number = [0, 0.67, 1, 1.33, 1.67, 2, 2.33, 2.67, 3, 3.33, 3.67, 4, 4.33, 4.67, 5, 5.33, 5.67, 6,
+                          6.33,
+                          6.67, 7, 7.33, 7.67, 8, 8.33, 8.67, 9]
+        Q1SCORE = st.selectbox("5️⃣请选择Q1SCORE", Q1SCORE_number, index=None, placeholder="点击下拉选择")
+        Q4SCORE = st.selectbox("6️⃣请选择Q4SCORE", list(range(11)), index=None,
+                               placeholder="点击下拉选择")
+        Q5SCORE = st.selectbox("7️⃣请选择Q5SCORE", list(range(5)), index=None,
+                               placeholder="点击下拉选择")
+        Q8SCORE = st.selectbox("8️⃣请选择Q8SCORE", list(range(13)), index=None,
+                               placeholder="点击下拉选择")
+        Q11SCORE = st.selectbox("9️⃣请选择Q11SCORE", list(range(5)), index=None,
+                                placeholder="点击下拉选择")
+        MEMORY5 = st.selectbox("1️⃣0️⃣请选择MEMORY5", (1, 2, 3, 4, 9), index=None,
+                               placeholder="点击下拉选择")
+        MEMORY7 = st.selectbox("1️⃣1️⃣请选择MEMORY7", (1, 2, 3, 4, 9), index=None,
+                               placeholder="点击下拉选择")
+        LANG2 = st.selectbox("1️⃣2️⃣请选择LANG2", (1, 2, 3, 4, 9), index=None, placeholder="点击下拉选择")
+        ORGAN3 = st.selectbox("1️⃣3️⃣请选择ORGAN3", (1, 2, 3, 4, 9), index=None,
+                              placeholder="点击下拉选择")
+        ORGAN5 = st.selectbox("1️⃣4️⃣请选择ORGAN5", (1, 2, 3, 4, 9), index=None, placeholder="点击下拉选择")
+        VISSPAT4 = st.selectbox("1️⃣5️⃣请选择VISSPAT4", (1, 2, 3, 4, 9), index=None,
+                                placeholder="点击下拉选择")
+        CDORIENT = st.selectbox("1️⃣6️⃣请选择CDORIENT", (0, 0.5, 1, 2), index=None, placeholder="点击下拉选择")
+        CDCOMMUN = st.selectbox("1️⃣7️⃣请选择CDCOMMUN", (0, 0.5, 1, 2), index=None, placeholder="点击下拉选择")
+        APGEN = st.selectbox("1️⃣8️⃣请选择APGEN", (2, 3, 4, 5, 6), index=None, placeholder="点击下拉选择")
+        if year != None and month != None and GENDER != None and DIAGNOSIS != None and EDUCATION != None and Q1SCORE != None and Q4SCORE != None and Q5SCORE != None and Q8SCORE != None and Q11SCORE != None and MEMORY5 != None and MEMORY7 != None and LANG2 != None and ORGAN3 != None and ORGAN5 != None and VISSPAT4 != None and CDORIENT != None and CDCOMMUN != None and APGEN != None:
+            st.subheader("结果输出🖨️")
+            INTERCEPT_coef = 3571.618
+            if GENDER == 2:
+                GENDER_coef = -218.726
+            else:
+                GENDER_coef = 0
+            AGE_coef = -16.222
+            if DIAGNOSIS == 2:
+                DIAGNOSIS_coef = -118.516
+            elif DIAGNOSIS == 3:
+                DIAGNOSIS_coef = -268.48
+            else:
+                DIAGNOSIS_coef = 0
+            EDUCATION_coef = 20.074
 
-            if ORGAN5 == 9:
-                ORGAN5_coef = -681.23
+            if Q1SCORE == 1.67:
+                Q1SCORE_coef = 157.284
+            elif Q1SCORE == 2.33:
+                Q1SCORE_coef = 197.636
+            elif Q1SCORE == 3.33:
+                Q1SCORE_coef = 156.023
+            elif Q1SCORE == 4.33:
+                Q1SCORE_coef = 204.77
+            elif Q1SCORE == 4.67:
+                Q1SCORE_coef = 138.082
+            elif Q1SCORE == 5.33:
+                Q1SCORE_coef = 191.321
+            elif Q1SCORE == 6:
+                Q1SCORE_coef = 148.539
+            elif Q1SCORE == 6.67:
+                Q1SCORE_coef = 251.822
+            else:
+                Q1SCORE_coef = 0
+            if Q4SCORE == 3:
+                Q4SCORE_coef = 105.22
+            elif Q4SCORE == 8:
+                Q4SCORE_coef = -334.119
+            elif Q4SCORE == 10:
+                Q4SCORE_coef = -434.924
+            elif Q4SCORE == 9:
+                Q4SCORE_coef = -421.857
+            else:
+                Q4SCORE_coef = 0
+            if Q5SCORE == 1:
+                Q5SCORE_coef = -178.953
+            else:
+                Q5SCORE_coef = 0
+            if Q8SCORE == 1:
+                Q8SCORE_coef = 118.477
+            elif Q8SCORE == 5:
+                Q8SCORE_coef = -181.078
+            elif Q8SCORE == 6:
+                Q8SCORE_coef = -217.239
+            else:
+                Q8SCORE_coef = 0
+            if Q11SCORE == 2:
+                Q11SCORE_coef = 297.016
+            else:
+                Q11SCORE_coef = 0
+            if MEMORY5 == 2:
+                MEMORY5_coef = -64.35
+            elif MEMORY5 == 4:
+                MEMORY5_coef = -194.441
+            else:
+                MEMORY5_coef = 0
+            if MEMORY7 == 4:
+                MEMORY7_coef = -392.296
+            elif MEMORY7 == 9:
+                MEMORY7_coef = -226.238
+            else:
+                MEMORY7_coef = 0
+            if LANG2 == 9:
+                LANG2_coef = -1111.622
+            else:
+                LANG2_coef = 0
+            if ORGAN3 == 3:
+                ORGAN3_coef = 255.704
+            elif ORGAN3 == 4:
+                ORGAN3_coef = 377.343
+            else:
+                ORGAN3_coef = 0
+            if ORGAN5 == 3:
+                ORGAN5_coef = -73.164
+            elif ORGAN5 == 9:
+                ORGAN5_coef = -611.061
             else:
                 ORGAN5_coef = 0
-            y = INTERCEPT_coef + Q1SCORE_coef * Q1SCORE + Q4SCORE_coef * Q4SCORE + Q6SCORE_coef * Q6SCORE + Q7SCORE_coef * Q7SCORE + Q8SCORE_coef * Q8SCORE + Q13SCORE_coef * Q13SCORE + MEMORY2_coef * MEMORY2 + MEMORY5_coef * MEMORY5 + MEMORY8_coef * MEMORY8 + LANG8_coef * LANG8 + LANG9_coef * LANG9 + DIVATT4_coef * DIVATT4 + CDORIENT_coef * CDORIENT + CDGLOBAL_coef * CDGLOBAL + PTNOTRT_coef * PTNOTRT + APGEN_coef * APGEN + ORGAN5_coef * ORGAN5
-            col1, col2 = st.columns(2)
-            with col1:
-                st.write("基于你上方填写的信息，海马体体积是")
-            with col2:
-                st.header("🧠" + str(y)[0:9])
-            col1, col2 = st.columns(2)
-            with col1:
-                st.write("该患者在所有受试者中，海马体体积的分位数为")
-            with col2:
-                yy_number = sum(item <= y for item in CA)
-                yy = yy_number / len(CA) * 100
-                st.header("👍" + str(yy)[:5] + "%")
-            fig = plt.figure()
-            plt.hist(CA, bins=100, density=1, histtype="step", cumulative=1, color="b",
-                     label="Historical patient hippocampal volume")
-            plt.axvline(y, c="r", label="Current patient's hippocampal volume", alpha=0.6)
-            plt.legend()
-            plt.savefig("result.jpg")
-            st.image("result.jpg")
+            if VISSPAT4 == 4:
+                VISSPAT4_coef = 359.837
+            elif VISSPAT4 == 9:
+                VISSPAT4_coef = -273.306
+            else:
+                VISSPAT4_coef = 0
+            if CDORIENT == 0.5:
+                CDORIENT_coef = -131.88
+            else:
+                CDORIENT_coef = 0
+            if CDCOMMUN == 1:
+                CDCOMMUN_coef = 492.133
+            else:
+                CDCOMMUN_coef = 0
+            if APGEN == 4:
+                APGEN_coef = -70.005
+            else:
+                APGEN_coef = 0
+            y = INTERCEPT_coef + GENDER_coef * GENDER + AGE_coef * AGE + DIAGNOSIS_coef * DIAGNOSIS + EDUCATION_coef * EDUCATION + Q1SCORE_coef * Q1SCORE + Q4SCORE_coef * Q4SCORE + Q5SCORE_coef * Q5SCORE + Q8SCORE_coef * Q8SCORE + Q11SCORE_coef * Q11SCORE + MEMORY5_coef * MEMORY5 + MEMORY7_coef * MEMORY7 + LANG2_coef * LANG2 + ORGAN3_coef * ORGAN3 + ORGAN5_coef * ORGAN5 + VISSPAT4_coef * VISSPAT4 + CDORIENT_coef * CDORIENT + CDCOMMUN_coef * CDCOMMUN + APGEN_coef * APGEN
+            if y <= 0:
+                st.write("很抱歉，无法估算患者的海马体体积")
+            else:
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.write("基于你上方填写的信息，海马体体积是")
+                with col2:
+                    st.subheader("🧠" + str(y)[0:9])
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.write("该患者在所有受试者中，海马体体积的分位数为")
+                with col2:
+                    yy_number = sum(item <= y for item in CA)
+                    yy = yy_number / len(CA) * 100
+                    st.subheader("👍" + str(yy)[:5] + "%")
+                fig = plt.figure()
+                plt.hist(CA, bins=100, density=1, histtype="step", cumulative=1, color="b",
+                         label="Historical patient hippocampal volume")
+                plt.axvline(y, c="r", label="Current patient's hippocampal volume", alpha=0.6)
+                plt.legend()
+                plt.savefig("result.jpg")
+                st.image("result.jpg")
+    # 第三阶段：19-20
+    if EDUCATION in list(range(19, 21)):
+        year, month = None, None
+        year_number = list(range(55, 88))
+        for i in range(len(year_number)):
+            year_number[i] = str(year_number[i]) + "岁"
+        year = st.selectbox("1️⃣请选择年龄（单位：年）  ", year_number, index=None, placeholder="点击下拉选择")
+        month_number = list(range(12))
+        for i in range(len(month_number)):
+            month_number[i] = str(month_number[i]) + "月"
+        month = st.selectbox("2️⃣请选择年龄（单位：月）  ", month_number, index=None, placeholder="点击下拉选择")
+        if year is not None and month is not None:
+            AGE = int(year[:-1]) + float(month[:-1]) / 12
+        GENDER = st.selectbox("3️⃣请选择性别  ", ("男", "女"), index=None, placeholder="点击下拉选择")
+        if GENDER == "男":
+            GENDER = 1
+        else:
+            GENDER = 2
+        DIAGNOSIS = st.selectbox("4️⃣请选择诊断结果  ", ("NL", "MCI", "DEMEMTIA"), index=None,
+                                 placeholder="点击下拉选择")
+        if DIAGNOSIS == "NL":
+            DIAGNOSIS = 1
+        elif DIAGNOSIS == "MCI":
+            DIAGNOSIS = 2
+        else:
+            DIAGNOSIS = 3
+        APGEN = st.selectbox("5️⃣请选择APGEN", (2, 3, 4, 5, 6), index=None, placeholder="点击下拉选择")
+        R2 = st.text_input("6️⃣请输入R2（0.49-0.95）", placeholder="例：0.6333")
+        try:
+            R2 = float(R2)
+            if R2 < 0.49 or R2 > 0.95:
+                st.write("输入不在规定范围内，请重新输入！")
+        except ValueError:
+            if R2 != "":
+                st.write("输入不是一个数字，请重新输入！")
+        Q1SCORE_number = [0, 0.67, 1, 1.33, 1.67, 2, 2.33, 2.67, 3, 3.33, 3.67, 4, 4.33, 4.67, 5, 5.33, 5.67, 6,
+                          6.33,
+                          6.67, 7, 7.33, 7.67, 8, 8.33, 8.67, 9]
+        Q1SCORE = st.selectbox("7️⃣请选择Q1SCORE", Q1SCORE_number, index=None, placeholder="点击下拉选择")
+        Q3SCORE = st.selectbox("8️⃣请选择Q3SCORE", list(range(4)), index=None,
+                               placeholder="点击下拉选择")
+        Q4SCORE = st.selectbox("9️⃣请选择Q4SCORE", list(range(11)), index=None,
+                               placeholder="点击下拉选择")
+        Q5SCORE = st.selectbox("1️⃣0️⃣请选择Q5SCORE", list(range(5)), index=None,
+                               placeholder="点击下拉选择")
+        Q8SCORE = st.selectbox("1️⃣1️⃣请选择Q8SCORE", list(range(13)), index=None,
+                               placeholder="点击下拉选择")
+        Q10SCORE = st.selectbox("1️⃣2️⃣请选择Q10SCORE", list(range(4)), index=None,
+                                placeholder="点击下拉选择")
+        Q13SCORE = st.selectbox("1️⃣3️⃣请选择Q10SCORE", list(range(6)), index=None,
+                                placeholder="点击下拉选择")
+        ORGAN5 = st.selectbox("1️⃣4️⃣请选择ORGAN5 ", (1, 2, 3, 4, 9), index=None, placeholder="点击下拉选择")
+        VISSPAT4 = st.selectbox("1️⃣5️⃣请选择VISSPAT4 ", (1, 2, 3, 4, 9), index=None,
+                                placeholder="点击下拉选择")
+        GDMEMORY = st.selectbox("1️⃣6️⃣请选择GDMEMORY", (0, 1), index=None, placeholder="点击下拉选择")
+        LANG8 = st.selectbox("1️⃣7️⃣请选择LANG8", (1, 2, 3, 4, 9), index=None,
+                             placeholder="点击下拉选择")
+        LANG2 = st.selectbox("1️⃣8️⃣请选择LANG2", (1, 2, 3, 4, 9), index=None, placeholder="点击下拉选择")
+
+        if year != None and month != None and GENDER != None and DIAGNOSIS != None and EDUCATION != None and R2 != None and Q1SCORE != None and Q3SCORE != None and Q4SCORE != None and Q5SCORE != None and Q8SCORE != None and Q10SCORE != None and Q13SCORE != None and ORGAN5 != None and VISSPAT4 != None and GDMEMORY != None and LANG8 != None and LANG2 != None:
+            st.subheader("结果输出🖨️")
+            INTERCEPT_coef = 4461.738
+            if GENDER == 2:
+                GENDER_coef = -79.97
+            else:
+                GENDER_coef = 0
+            AGE_coef = -9.021
+            if DIAGNOSIS == 2:
+                DIAGNOSIS_coef = -127.205
+            elif DIAGNOSIS == 3:
+                DIAGNOSIS_coef = 46.467
+            else:
+                DIAGNOSIS_coef = 0
+            EDUCATION_coef = -17.714
+            if APGEN == 4:
+                APGEN_coef = 238.945
+            elif APGEN == 3:
+                APGEN_coef = 203.608
+            else:
+                APGEN_coef = 0
+            if Q1SCORE == 3.33:
+                Q1SCORE_coef = 296.185
+            elif Q1SCORE == 1:
+                Q1SCORE_coef = -265.127
+            else:
+                Q1SCORE_coef = 0
+            if Q3SCORE == 1:
+                Q3SCORE_coef = 213.029
+            else:
+                Q3SCORE_coef = 0
+            if Q13SCORE == 1:
+                Q13SCORE_coef = -123.9
+            else:
+                Q13SCORE_coef = 0
+            R2_coef = -1137.56
+            if Q4SCORE == 4:
+                Q4SCORE_coef = -51.388
+            elif Q4SCORE == 8:
+                Q4SCORE_coef = 198.361
+            else:
+                Q4SCORE_coef = 0
+            if Q5SCORE == 1:
+                Q5SCORE_coef = 177.165
+            else:
+                Q5SCORE_coef = 0
+            if Q10SCORE == 1:
+                Q10SCORE_coef = -709.985
+            else:
+                Q10SCORE_coef = 0
+            if Q8SCORE == 10:
+                Q8SCORE_coef = -618.838
+            elif Q8SCORE == 6:
+                Q8SCORE_coef = -557.584
+            elif Q8SCORE == 9:
+                Q8SCORE_coef = -696.84
+            elif Q8SCORE == 2:
+                Q8SCORE_coef = -187.374
+            else:
+                Q8SCORE_coef = 0
+            if VISSPAT4 == 9:
+                VISSPAT4_coef = -1177.229
+            else:
+                VISSPAT4_coef = 0
+            if ORGAN5 == 3:
+                ORGAN5_coef = 412.667
+            else:
+                ORGAN5_coef = 0
+            if GDMEMORY == 1:
+                GDMEMORY_coef = -278.751
+            else:
+                GDMEMORY_coef = 0
+            if LANG8 == 3:
+                LANG8_coef = -358.648
+            elif LANG8 == 2:
+                LANG8_coef = -226.218
+            else:
+                LANG8_coef = 0
+            if LANG2 == 3:
+                LANG2_coef = 389.737
+            elif LANG2 == 2:
+                LANG2_coef = 187.897
+            elif LANG2 == 4:
+                LANG2_coef = -433.608
+            else:
+                LANG2_coef = 0
+            y = INTERCEPT_coef + GENDER_coef * GENDER + AGE_coef * AGE + DIAGNOSIS_coef * DIAGNOSIS + EDUCATION_coef * EDUCATION + APGEN_coef * APGEN + Q1SCORE_coef * Q1SCORE + Q3SCORE_coef * Q3SCORE + Q13SCORE_coef * Q13SCORE + R2_coef * R2 + Q4SCORE_coef * Q4SCORE + Q5SCORE_coef * Q5SCORE + Q10SCORE_coef * Q10SCORE + Q8SCORE_coef * Q8SCORE + ORGAN5_coef * ORGAN5 + VISSPAT4_coef * VISSPAT4 + GDMEMORY_coef * GDMEMORY + LANG8_coef * LANG8 + LANG2_coef * LANG2
+            if y <= 0:
+                st.write("很抱歉，无法估算患者的海马体体积")
+            else:
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.write("基于你上方填写的信息，海马体体积是")
+                with col2:
+                    st.subheader("🧠" + str(y)[0:9])
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.write("该患者在所有受试者中，海马体体积的分位数为")
+                with col2:
+                    yy_number = sum(item <= y for item in CA)
+                    yy = yy_number / len(CA) * 100
+                    st.subheader("👍" + str(yy)[:5] + "%")
+                fig = plt.figure()
+                plt.hist(CA, bins=100, density=1, histtype="step", cumulative=1, color="b",
+                         label="Historical patient hippocampal volume")
+                plt.axvline(y, c="r", label="Current patient's hippocampal volume", alpha=0.6)
+                plt.legend()
+                plt.savefig("result.jpg")
+                st.image("result.jpg")
